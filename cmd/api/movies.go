@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"greenlight.ergz/internal/data"
 )
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,5 +19,20 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	fmt.Fprintf(w, "show the details of movie %d\n", id)
+	movie := data.Movie{
+		ID:        id,
+		CreatedAt: time.Now(),
+		Title:     "Casablanca",
+		Runtime:   102,
+		Genres:    []string{"drama", "romance", "war"},
+		Version:   1,
+	}
+
+	envelopedMovie := envelope{"movie": movie}
+	err = app.writeJSON(w, http.StatusOK, envelopedMovie, nil)
+	if err != nil {
+		app.logger.Print(err)
+		http.Error(w, "the server encountered an error and could process your request", http.StatusInternalServerError)
+	}
+
 }
