@@ -16,8 +16,7 @@ func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Reques
 
 	err := app.writeJSON(w, http.StatusOK, envelopedHealth, nil)
 	if err != nil {
-		app.logger.Print(err)
-		http.Error(w, "the server encountered an error and could process your request", http.StatusInternalServerError)
+		app.serverErrorResponse(w, r, err)
 	}
 
 }
